@@ -5,7 +5,7 @@ public class Escenario {
 	private String nombre;		// nombre del planeta o satelite
 	private double g;			// gravedad del escenario
 	private double ve;			// velocidad de entrada
-	private double he;			// Distancia de aproximacion
+	private double he;			// Distancia de aproximacion. En BBDD figura como INTEGER
 	
 	public Escenario (String nombre, double g, double ve, double he){
 		this.nombre=nombre;

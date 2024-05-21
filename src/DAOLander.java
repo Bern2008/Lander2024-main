@@ -20,7 +20,7 @@ public class DAOLander {
 	
 	/**
 	 * Trae la lista de Landers registrados en la base de datos
-	 * @return Colección de objetos Lander registrados
+	 * @return Coleccion de objetos Lander registrados
 	 */
 	public ArrayList<Lander>getLanders() {
 		

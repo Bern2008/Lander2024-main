@@ -2,6 +2,7 @@ import java.text.DecimalFormat;
 import java.util.Scanner;
 
 import java.sql.*;
+import java.util.ArrayList;
 
 public class Lander2024 {
 
@@ -58,6 +59,7 @@ public class Lander2024 {
 				break;
 			case 2:
 				System.out.println("\nELIGE ESCENARIO");
+				eligeEscenario();
 				break;
 			case 3:
 				System.out.println("\nINICIAR SIMULACION");
@@ -89,11 +91,52 @@ public class Lander2024 {
     	return null;
     }
     
-    public Escenario eligeEscenario(){ // Aquí empiezo
+    public Escenario eligeEscenario(){ // Devuelve un escenario
 		
+		Escenario escElegido = null;
 		
+		DAOEscenario de = new DAOEscenario("local");		
+		ArrayList<Escenario> escPosibles = de.getEscenarios();	
 		
-		return null;
+		// Menú escenarios
+		String[] opcsEsc = {"MOON", "MARS", "CALLISTO", "PLUTO"};
+		
+		Menu mesc = new Menu(opcsEsc);
+		mesc.setTitulo("ESCENARIOS");
+		Integer opEsc = 0;
+		boolean salirEsc = false;
+		
+			while(!salirEsc){ //El menú se sigue mostrando hasta "Salir" para cambiar la opción
+				
+				mesc.mostrarMenu();
+				opEsc = mesc.eligeOpcion();
+				
+					switch(opEsc){
+						case 1:
+							escElegido = escPosibles.get(0);
+							break;
+							
+						case 2:
+							escElegido = escPosibles.get(1);
+							break;
+							
+						case 3:
+							escElegido = escPosibles.get(2);
+							break;
+							
+						case 4:
+							escElegido = escPosibles.get(3);
+							break;
+							
+						case 0:
+							salirEsc=true;
+							break;
+					}
+				System.out.println("El escenario elegido es: "+escElegido.getNombre());
+			}
+		
+	return escElegido;
+				
 	}
  /*   
     public void runStructured(){
