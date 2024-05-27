@@ -96,10 +96,17 @@ public class Lander2024 {
 		Escenario escElegido = null;
 		
 		DAOEscenario de = new DAOEscenario("local");		
-		ArrayList<Escenario> escPosibles = de.getEscenarios();	
+		ArrayList<Escenario> escPosibles = de.getEscenarios();
+		int tam = escPosibles.size();	
 		
 		// Menú escenarios
-		String[] opcsEsc = {"MOON", "MARS", "CALLISTO", "PLUTO"};
+		//String[] opcsEsc = {"MOON", "MARS", "CALLISTO", "PLUTO"};
+		String[] opcsEsc = new String[tam];
+		
+			for(int i=0; i<opcsEsc.length; i++){
+				opcsEsc[i] = escPosibles.get(i).getNombre() + " con una gravedad de "+
+							escPosibles.get(i).getG()+" g";
+			}
 		
 		Menu mesc = new Menu(opcsEsc);
 		mesc.setTitulo("ESCENARIOS");
@@ -112,6 +119,7 @@ public class Lander2024 {
 				opEsc = mesc.eligeOpcion();
 				
 					switch(opEsc){
+						
 						case 1:
 							escElegido = escPosibles.get(0);
 							break;
@@ -132,7 +140,14 @@ public class Lander2024 {
 							salirEsc=true;
 							break;
 					}
-				System.out.println("El escenario elegido es: "+escElegido.getNombre());
+				
+				if(escElegido !=null){
+					System.out.println("El escenario elegido es: "+escElegido.getNombre()+
+										" con una gravedad de "+escElegido.getG()+" g");
+				}
+				else{
+					System.out.println("No ha elegido ningún escenario. ADIOS");
+				}
 			}
 		
 	return escElegido;
