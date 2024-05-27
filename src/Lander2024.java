@@ -114,7 +114,7 @@ public class Lander2024 {
 		Integer opEsc = 0;
 		boolean salirEsc = false;
 		
-			while(!salirEsc){ //El menú se sigue mostrando hasta "Salir" para cambiar la opción
+			while(!salirEsc){
 				
 				mesc.mostrarMenu();
 				opEsc = mesc.eligeOpcion();
@@ -132,7 +132,7 @@ public class Lander2024 {
 							System.out.println("El escenario elegido es: "+escElegido.getNombre()+
 										" con una gravedad de "+escElegido.getG()+" g");
 						
-							System.out.println("¿Confirmación? "+"\t"+"S: Aceptar");
+							System.out.println("¿Confirmación? "+"\t"+"S: Aceptar"); //Pedimos confirmación por si queremos cambiar de escenario
 							System.out.println("               "+"\t"+"Cualquier otra tecla: Cancelar");
 							
 							conf = teclado.next();
