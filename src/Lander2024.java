@@ -100,7 +100,6 @@ public class Lander2024 {
 		int tam = escPosibles.size();	
 		
 		// Menú escenarios
-		//String[] opcsEsc = {"MOON", "MARS", "CALLISTO", "PLUTO"};
 		String[] opcsEsc = new String[tam];
 		
 			for(int i=0; i<opcsEsc.length; i++){
