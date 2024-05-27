@@ -96,18 +96,20 @@ public class Lander2024 {
 		Escenario escElegido = null;
 		
 		DAOEscenario de = new DAOEscenario("local");		
+		
 		ArrayList<Escenario> escPosibles = de.getEscenarios();
-		int tam = escPosibles.size();	
+		int tam = escPosibles.size();
 		
-		// Menú escenarios
-		String[] opcsEsc = new String[tam];
+		Scanner teclado = new Scanner(System.in);	
 		
-			for(int i=0; i<opcsEsc.length; i++){
-				opcsEsc[i] = escPosibles.get(i).getNombre() + " con una gravedad de "+
+		String[] opcEsc = new String[tam]; //Formamos las opciones
+		
+			for(int i=0; i<opcEsc.length; i++){
+				opcEsc[i] = escPosibles.get(i).getNombre() + " con una gravedad de "+
 							escPosibles.get(i).getG()+" g";
 			}
 		
-		Menu mesc = new Menu(opcsEsc);
+		Menu mesc = new Menu(opcEsc);
 		mesc.setTitulo("ESCENARIOS");
 		Integer opEsc = 0;
 		boolean salirEsc = false;
@@ -116,41 +118,33 @@ public class Lander2024 {
 				
 				mesc.mostrarMenu();
 				opEsc = mesc.eligeOpcion();
+				String conf=" ";
 				
-					switch(opEsc){
+					if(opEsc>=0 && opEsc<=opcEsc.length){
 						
-						case 1:
-							escElegido = escPosibles.get(0);
-							break;
-							
-						case 2:
-							escElegido = escPosibles.get(1);
-							break;
-							
-						case 3:
-							escElegido = escPosibles.get(2);
-							break;
-							
-						case 4:
-							escElegido = escPosibles.get(3);
-							break;
-							
-						case 0:
-							salirEsc=true;
-							break;
-					}
-				
-				if(escElegido !=null){
-					System.out.println("El escenario elegido es: "+escElegido.getNombre()+
+						if(opEsc==0){
+							escElegido=null;
+							salirEsc=true;							
+						}
+						
+						else{
+							escElegido = escPosibles.get(opEsc-1);
+							System.out.println("El escenario elegido es: "+escElegido.getNombre()+
 										" con una gravedad de "+escElegido.getG()+" g");
-				}
-				else{
-					System.out.println("No ha elegido ningún escenario. ADIOS");
-				}
+						
+							System.out.println("¿Confirmación? "+"\t"+"S: Aceptar");
+							System.out.println("               "+"\t"+"Cualquier otra tecla: Cancelar");
+							
+							conf = teclado.next();
+								
+								if(conf.equalsIgnoreCase("S")){
+								salirEsc=true;
+								}
+						}
+					}
 			}
-		
-	return escElegido;
-				
+						
+			return escElegido;
 	}
  /*   
     public void runStructured(){
