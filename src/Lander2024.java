@@ -139,13 +139,16 @@ public class Lander2024 {
 								
 								if(conf.equalsIgnoreCase("S")){
 								salirEsc=true;
+								
 								}
 						}
 					}
 			}
 						
 			return escElegido;
+			
 	}
+	
  /*   
     public void runStructured(){
         double dist=0;                     // Distancia a la superficie m
