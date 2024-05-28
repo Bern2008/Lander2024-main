@@ -1,50 +1,37 @@
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 
 public class Escenario {
 
-	private String nombre;		// nombre del planeta o satelite
-	private double g;			// gravedad del escenario
-	private double ve;			// velocidad de entrada
-	private double he;			// Distancia de aproximacion. En BBDD figura como INTEGER
+	private String nombre;		// nombre del planeta o satélite
+	private Double g;			// gravedad del escenario
+	private Double ve;			// velocidad de entrada
+	private Double he;			// Distancia de aproximación
 	
-	public Escenario (String nombre, double g, double ve, double he){
-		this.nombre=nombre;
-		this.g=g;
-		this.ve=ve;
-		this.he=he;
+	
+	
+	public Escenario(String nombre, Double g, Double ve, Double he) {
+		super();
+		this.nombre = nombre;
+		this.g = g;
+		this.ve = ve;
+		this.he = he;
 	}
 	
-	public String getNombre(){
-		return nombre;
-	}
 	
-	public void setNombre(String nom){
-		this.nombre = nom;
-	}
-	
-	public double getG(){
-		return g;
-	}
-	
-	public void setG(double velG){
-		this.g = velG;
-	}
-	
-	public double getVe(){
-		return ve;
-	}
-	
-	public void setVe(double VelEnt){
-		this.ve = VelEnt;
-	}
-	
-	public double getHe(){
-		return he;
-	}
-	
-	public void setHe(double VelAprox){
-		this.he = VelAprox;
-	}
 
+	public String getNombre() 				{	return nombre;	}
+	public void setNombre(String nombre) 	{	this.nombre = nombre;	}
+	public Double getG() 					{	return g;	}
+	public void setG(Double g) 				{	this.g = g;	}
+	public Double getVe() 					{	return ve;	}
+	public void setVe(Double ve) 			{	this.ve = ve;	}
+	public Double getHe() 					{	return he;	}
+	public void setHe(Double he) 			{	this.he = he;	}
+    public String toString() {
+    	return nombre + "  (G)  "+ g + "  (Ve)  "+ ve+ "  (He)  "+ he;
+    }
 	
 }

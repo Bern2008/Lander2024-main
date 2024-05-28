@@ -1,7 +1,7 @@
 drop database if exists lander2024;
 create database lander2024;
 
-use lander2024;
+use lander2024; 
 
 -- Usuarios
 create table usuario(
@@ -18,18 +18,21 @@ estado tinyint default 0  -- 0 no esta jugando y 1 esta jugando
 create table lander(
 id_lander int auto_increment primary key,
 nombre varchar(32) not null,
-t_a float default 0, -- tren de ate
-fuel int not null -- deposito combustible
+t_a double default 0, -- tren de ate
+fuel double not null,-- deposito combustible
+perfil_pot int default 0  -- Sólo se elige un perfil y no 
+-- se guarda la elección. 
 );
 -- Modificada la clave principal
 
 create table perfil_pot(
 id_perfil int not null,
 nivel int not null,
-valor int not null,
+valor float not null,
 primary key(id_perfil,nivel)
 );
 
+/** No usada en esta versión **/
 create table confg_pot(
 id_perfil int not null,-- fk
 id_la int not null, -- fk
@@ -39,9 +42,9 @@ id_config int auto_increment primary key
 create table escenario(
 id_escenario int auto_increment primary key,
 nombre varchar(24) not null, -- Nombre de la estrella/planeta
-gravedad float not null, -- Gravedad del cuerpo astral
-ve float not null, -- velocida de entrada
-he int not null -- altura de entrada
+gravedad double not null, -- Gravedad del cuerpo astral
+ve double not null, -- velocida de entrada
+he double not null -- altura de entrada
 );
 
 create table simulacion(
@@ -61,9 +64,10 @@ fuel float not null,
 dist float not null,
 id_sim int not null
 );
-
+ 
 create table puntuacion(
 id_usuario int not null,
+id_simulacion int not null,
 tiempo int not null,
 fuel float not null,
 fecha timestamp);
@@ -80,9 +84,10 @@ ALTER TABLE simulacion ADD FOREIGN KEY (id_usuario)   references usuario(id_usua
 ALTER TABLE simulacion ADD FOREIGN KEY (id_lander)    references lander(id_lander);
 ALTER TABLE simulacion ADD FOREIGN KEY (id_escenario) references escenario(id_escenario);
 ALTER TABLE puntuacion ADD FOREIGN KEY (id_usuario)   references usuario(id_usuario);
+ALTER TABLE puntuacion ADD FOREIGN KEY (id_simulacion)references simulacion(id_sim);
 ALTER TABLE confg_pot  ADD FOREIGN KEY (id_la)        references lander(id_lander);
-ALTER TABLE confg_pot  ADD FOREIGN KEY (id_perfil) references perfil_pot(id_perfil);
-ALTER TABLE datos_sim  ADD FOREIGN KEY  (id_sim)      references simulacion(id_sim);
+ALTER TABLE confg_pot  ADD FOREIGN KEY (id_perfil) 	  references perfil_pot(id_perfil);
+ALTER TABLE datos_sim  ADD FOREIGN KEY (id_sim)      references simulacion(id_sim);
 
 -- FUNCIONES Y PROCEDIMIENTOS
 

@@ -1,16 +1,15 @@
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 import java.sql.*;
-import java.util.ArrayList;
 
 public class Lander2024 {
 
- 
+	public final String MODO = "local";
     public static void main(String[] args) throws Exception {
        
         Lander2024 l = new Lander2024();
-
         //l.runStructured();    // Versión clásica sin persistencia
         l.runOop();             // Versión oop con base de datos 
  
@@ -18,22 +17,40 @@ public class Lander2024 {
 
     public void runOop(){
         System.out.println("Iniciando aplicación ...");
-        if (get_access()!=0) {
-        	
-        	if (play()!=0) {
+        Integer idUser = get_access();
+        if (idUser!=0) {       	
+        	if (play(idUser)!=0) {
         		reset_account();
         	}
         }
         System.out.println("Terminando aplicación ...");
     }
 
+    /**
+     * Concede acceso a la plataforma
+     * @return
+     */
     public int get_access() {
-    	int _id = 1;					
-    	
+    	int _id ;	
+    	System.out.println("Accediendo a la plataforma ...");
+    	DAOMySql dms = new DAOMySql(MODO);
+    	if (dms.c == null) {
+    		System.out.println("Plataforma no disponible!");
+    		_id=0;
+    	}
+    	else {
+    		System.out.println("Acceso concedido!");
+    		_id = 1;	// Ususario RMS sólo para pruebas
+    		try {
+				dms.c.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+    	}
     	return _id;
     }
     
-    public int play() {
+    public int play(Integer Usuario) {
     	int res = -1; // juego no terminado
 		String[] opcs = {	"Elegir Modulo",
 							"Elegir Escenario",
@@ -55,20 +72,31 @@ public class Lander2024 {
 		opcion = mppal.eligeOpcion();
 		switch(opcion) {
 			case 1:
-				System.out.println("\nELIGE MODULO LUNAR");
+				//System.out.println("\nELIGE MODULO LUNAR");
+				l = eligeLander();
+				if (l!=null)
+					System.out.println("MODULO --> "+l);
 				break;
 			case 2:
-				System.out.println("\nELIGE ESCENARIO");
-				eligeEscenario();
+				//System.out.println("\nELIGE ESCENARIO");
+				e = eligeEscenario();
+				if (e!=null)
+					System.out.println("ESCENARIO --> "+e);
 				break;
 			case 3:
-				System.out.println("\nINICIAR SIMULACION");
+				if ((l!= null) && (e!=null))
+					runSim(Usuario,l,e);
+				else
+					System.out.println("Elija primero módulo y escenario válidos");
+				//System.out.println("\nINICIAR SIMULACION");
 				break;
 			case 4:
 				System.out.println("\nPUNTUACIONES");
+				System.out.println("\n** No implementado");
 				break;
 			case 5:
 				System.out.println("\nCREDITOS");
+				System.out.println("\n** No implementado");
 				break;
 			case 0:
 				salir = true;
@@ -78,17 +106,51 @@ public class Lander2024 {
 		} // fin bucle principal
     	return res;
     }
-    public void reset_account() {}
+    public void reset_account() {
+    	
+        
+    	
+    	
+    }
 
     
     public Lander eligeLander() {
     	
+    	boolean boo = false; 
     	// Conecta a la base de datos
-    	// Crea un menú con los lander disponibles
-    	// Elige 1
-    	// Salir
-    	
-    	return null;
+    	DAOLander dl = new DAOLander(MODO);
+		Lander myLander = null;
+    	// TODO Crea un menú con los lander disponibles
+		ArrayList <Lander> Arraylander = dl.getLanders();
+		String [] opciones = new String [Arraylander.size()];// Tamaño de la array para el menu
+		int i = 0;
+		for(Lander lan : Arraylander){ // Guardar los nombre y cantidad del depósito de los modulos en la array para el menu
+			opciones[i] = "Modulo: "+lan.getNombre() + ", Depósito de combustible: "+ lan.getFuel_deposito();
+			i++;
+		}
+		Menu menu = new Menu(opciones);
+    	try {
+			while (!boo) {
+				menu.mostrarMenu();
+				int opt = menu.eligeOpcion();
+				if(opt <= Arraylander.size() && opt > 0){
+					myLander = dl.getLanders().get(opt-1);
+					boo = true;// pongo que salga automaticamente al elegir
+				}
+				else if (opt == 0){
+					boo = true;
+					System.out.println("Salir");
+				}
+				else{
+					System.out.println("La opción no existe");
+				}
+				
+			}
+			dl._c.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+    	return myLander;
     }
     
     public Escenario eligeEscenario(){ // Devuelve un escenario
@@ -148,7 +210,24 @@ public class Lander2024 {
 			return escElegido;
 			
 	}
-	
+    
+    public void runSim(Integer user,Lander l, Escenario e) {
+    	
+    	Double altura = 0.0;
+    	Simulacion sim = new Simulacion(user,l,e);
+   	
+    	do {						// bucle principal de la simulación
+    		
+    		sim.muestraPanel();					// Mostrar los resultados
+    		sim.aplicaMotor(l);					// Acciona motores
+    		sim.getSe().sim_frame();			// Calcula física
+    		sim.addSimData(); 					// Registra los datos generados
+    		altura = sim.getSe().getDist();		// Comprobar altura
+    	}
+    	while (altura>0 && !(sim.__break)) ;
+    	sim.show_result(); 						// Resultado Final de la simulación
+    	sim.saveSim(MODO);						// Salva resultado en BBDD
+    }
  /*   
     public void runStructured(){
         double dist=0;                     // Distancia a la superficie m
@@ -223,5 +302,3 @@ public class Lander2024 {
     }
 */
 }
-
-

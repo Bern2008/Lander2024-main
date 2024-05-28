@@ -9,40 +9,51 @@ public class DAOEscenario {
 	public static Connection _c;
 	
 	public DAOEscenario(String Modo) {
-		
 		DAOMySql dms = new DAOMySql(Modo);
-		
-			if (dms.c!=null) {
-				_c = dms.c;
-			}
-			
-			else {_c= null;}
+		if (dms.c!=null) {
+			_c = dms.c;
 		}
+		else _c= null;
+	}
+
+	public Integer getIdbyEscenario(Escenario es) {
+		
+		Integer result = -1;
+		Statement stm;
+		try {
+			stm = _c.createStatement();
+			String ssql = "SELECT id_escenario FROM lander WHERE nombre = '"+es.getNombre()+"'";
+			ResultSet rs = stm.executeQuery(ssql);
+			
+			if (rs.next()) { result = rs.getInt("id_escenario");}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
 	
 	/**
-	 * Trae la lista de Escenarios registrados en la base de datos
-	 * @return Colección de objetos Escenario registrados
+	 * Trae la lista de Landers registrados en la base de datos
+	 * @return Coleccion de objetos Lander registrados
 	 */
-	
-	public ArrayList<Escenario> getEscenarios() {
+	public ArrayList<Escenario>getEscenarios() {
 		
-		ArrayList<Escenario> esc = new ArrayList<Escenario>();
-		
+		ArrayList<Escenario> ale = new ArrayList<Escenario>();
+		Integer id_escenario;
 		try {
 			Statement stm = _c.createStatement();
-			String ssql = "SELECT * FROM escenario";
+			String ssql = "SELECT * FROM escenario ORDER BY id_escenario";
 			ResultSet rs = stm.executeQuery(ssql);
 			while (rs.next()) {
-				Escenario nesc = new Escenario(rs.getString(2),rs.getDouble(3),rs.getDouble(4),rs.getDouble(5));
-				esc.add(nesc); // Se produce conversión automática de INTEGER a DOUBLE
+				id_escenario = rs.getInt("id_escenario");
+				Escenario nesc = new Escenario(rs.getString("nombre"),rs.getDouble("gravedad"),rs.getDouble("ve"),rs.getDouble("he"));
+				ale.add(nesc);
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
-		return esc;
+		return ale;
 	}
-	
-	
 }
