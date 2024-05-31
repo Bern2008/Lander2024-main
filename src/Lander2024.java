@@ -372,6 +372,5 @@ public class Lander2024 {
 			System.out.println("Error Base de Datos SQL");
 			System.out.println(e);
 		}
-		
 	}
 }
