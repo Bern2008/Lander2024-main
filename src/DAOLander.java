@@ -21,7 +21,7 @@ public class DAOLander {
 	
 	/**
 	 * Trae la lista de Landers registrados en la base de datos
-	 * @return Coleccion de objetos Lander registrados
+	 * @return Colección de objetos Lander registrados
 	 */
 	public ArrayList<Lander>getLanders() {
 		
@@ -37,10 +37,11 @@ public class DAOLander {
 				id_lander = rs.getInt("id_lander");
 				perfil_pot = rs.getInt("perfil_pot");
 				Lander nlan = new Lander(rs.getString("nombre"),rs.getInt("fuel"),rs.getDouble("t_a"));
+				nlan.setId(id_lander);
 				//-- Datos del perfil de potencia
 				DAOPerfilPot dpp = new DAOPerfilPot(_MODO);
 				PerfilPot p =dpp.findPerfilById(perfil_pot);
-				dpp._c.close();  //-- Si no se cierran, van quedando hasta que termine la aplicacion
+				dpp._c.close();  //-- Si no se cierran, van quedando hasta que termine la aplicación
 								 //-- o las elimina el motor si no se usan
 				nlan.setPerfPot(p);
 				all.add(nlan);

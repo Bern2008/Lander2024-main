@@ -2,10 +2,15 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
 import java.sql.*;
 
 public class Lander2024 {
-
+	
 	public final String MODO = "local";
     public static void main(String[] args) throws Exception {
        
@@ -17,9 +22,9 @@ public class Lander2024 {
 
     public void runOop(){
         System.out.println("Iniciando aplicación ...");
-        Integer idUser = get_access();
-        if (idUser!=0) {       	
-        	if (play(idUser)!=0) {
+        Player itUser = get_access();
+        if (itUser!=null) {       	
+        	if (play(itUser)!=0) {
         		reset_account();
         	}
         }
@@ -30,27 +35,44 @@ public class Lander2024 {
      * Concede acceso a la plataforma
      * @return
      */
-    public int get_access() {
+    // TODO pedir usuario / contraseña y crear objeto player si OK
+    public Player get_access() {
     	int _id ;	
+    	Player p=null;
+    	
     	System.out.println("Accediendo a la plataforma ...");
     	DAOMySql dms = new DAOMySql(MODO);
     	if (dms.c == null) {
     		System.out.println("Plataforma no disponible!");
-    		_id=0;
+    		p=null;
     	}
     	else {
-    		System.out.println("Acceso concedido!");
-    		_id = 1;	// Ususario RMS sólo para pruebas
-    		try {
-				dms.c.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
+    		Scanner sc = new Scanner(System.in);
+    		System.out.print("Introduce nombre de usuario: ");
+    		String _nick = sc.nextLine();
+    		System.out.print("Introduce contraseña: ");
+    		String _pass = sc.nextLine();
+    		DAOPlayer dp = new DAOPlayer(MODO);
+    		p = dp.getPlayerbyNickPass(_nick,_pass);
+    		if (p!=null) {
+        		System.out.print ("Acceso concedido! ");
+        		System.out.println(p);
+        		try {
+    				dms.c.close();
+    			} catch (SQLException e) {
+    				e.printStackTrace();
+    				p = null;
+    			}
+    		}
+    		else {
+    			System.out.println ("Credenciales incorrectas! ");
+    			p=null;
+    			}
     	}
-    	return _id;
-    }
+    	return p;
+    } //Player get_access() 
     
-    public int play(Integer Usuario) {
+    public int play(Player Usuario) {
     	int res = -1; // juego no terminado
 		String[] opcs = {	"Elegir Modulo",
 							"Elegir Escenario",
@@ -92,7 +114,8 @@ public class Lander2024 {
 				break;
 			case 4:
 				System.out.println("\nPUNTUACIONES");
-				System.out.println("\n** No implementado");
+				//System.out.println("\n** No implementado");
+				puntuaciones();
 				break;
 			case 5:
 				System.out.println("\nCREDITOS");
@@ -106,13 +129,10 @@ public class Lander2024 {
 		} // fin bucle principal
     	return res;
     }
+    
     public void reset_account() {
-    	
-        
-    	
-    	
+       	
     }
-
     
     public Lander eligeLander() {
     	
@@ -211,11 +231,11 @@ public class Lander2024 {
 			
 	}
     
-    public void runSim(Integer user,Lander l, Escenario e) {
+    public void runSim(Player user,Lander l, Escenario e) {
     	
     	Double altura = 0.0;
     	Simulacion sim = new Simulacion(user,l,e);
-   	
+		sim.addSimData(); 			// Registra los datos de inicio de la simulación
     	do {						// bucle principal de la simulación
     		
     		sim.muestraPanel();					// Mostrar los resultados
@@ -225,8 +245,9 @@ public class Lander2024 {
     		altura = sim.getSe().getDist();		// Comprobar altura
     	}
     	while (altura>0 && !(sim.__break)) ;
-    	sim.show_result(); 						// Resultado Final de la simulación
-    	sim.saveSim(MODO);						// Salva resultado en BBDD
+    	 						// Resultado Final de la simulación
+    	if (sim.show_result())
+    		sim.saveSim(MODO);						// Salva resultado en BBDD
     }
  /*   
     public void runStructured(){
@@ -301,4 +322,56 @@ public class Lander2024 {
 
     }
 */
+	public void puntuaciones() {	
+								
+		DAOSimulacion ds = new DAOSimulacion(MODO);
+				
+		Statement stm;
+		
+		try{
+		
+			stm=ds._c.createStatement();
+				
+			Scanner teclado = new Scanner(System.in);
+		
+			String[] opcPun ={"Puntuación por tiempo", "Puntuación por eficiencia"};
+		
+			Menu mpun = new Menu(opcPun);
+			mpun.setTitulo("10 MEJORES PUNTUACIONES POR TIEMPO");
+			Integer opPun = 0;
+			boolean salirPun = false;
+		
+				while(!salirPun){
+			
+					mpun.mostrarMenu();
+					opPun = mpun.eligeOpcion();
+			
+						switch(opPun) {
+							case 1:
+								System.out.println("Puntuaciones por tiempo");
+								ResultSet rs = stm.executeQuery("SELECT * FROM Puntuaciones_Por_Tiempos");
+									
+									while(rs.next()){
+										System.out.println(rs.getString(1)+"   "+rs.getInt(2)+"   "+rs.getDate(3));
+									}
+									rs.close();
+								break;
+								
+							case 2:
+								System.out.println("Puntuación por eficiencia");
+								break;
+				
+							case 0:
+							salirPun=true;
+							break;
+						}
+				}
+		}
+	
+		catch(SQLException e){
+			System.out.println("Error Base de Datos SQL");
+			System.out.println(e);
+		}
+		
+	}
 }

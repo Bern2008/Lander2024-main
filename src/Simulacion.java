@@ -18,10 +18,10 @@ public class Simulacion {
 	// Para abandonar hay que introducir un nivel de impulso = -1
 	
 	// Constructor
-	public Simulacion(Integer user, Lander lander, Escenario planet) {
+	public Simulacion(Player _user, Lander lander, Escenario planet) {
 		super();
 		this.lander = lander;
-		this.user = new Player(user);
+		this.user = _user;
 		this.planet = planet;
 		this.timestamp = LocalDateTime.now();
 		init();
@@ -51,6 +51,7 @@ public class Simulacion {
 		ds.setFuel(getLander().getFuel_deposito());
 		simData.add(ds);
 	}
+	
 	/**
 	 * Inicializa la simulación
 	 * @return
@@ -119,8 +120,9 @@ public class Simulacion {
 		} // Sin fuel
 	}
 	
-	public void show_result() {
+	public Boolean show_result() {
 		
+		Boolean flag = false;				// Terminación sin salvar puntuación
         // Comprobar la condiciones de aterrizaje y mostrar información sobre el mismo.
 		Double vel_fin = se.getVel();
 		Double dist_fin =se.getDist();
@@ -130,19 +132,22 @@ public class Simulacion {
 		
 		if (!this.__break) {
 		
-			if (Math.abs(se.getVel())>lander.getRes_tren()){
+			flag = (Math.abs(se.getVel())>lander.getRes_tren());
+			if (flag){
                 System.out.println("\nHAS ESTRELLADO LA NAVE");
                 System.out.println("------------------------------------------------");
                 System.out.println("VELOCIDAD DE ENTRADA    : "+ df.format(vel_fin) + " m/s");
                 System.out.println("HAS HECHO UN CRATER DE  : "+ df.format(Math.abs(dist_fin)) + " m");
                 System.out.println("------------------------------------------------");
-            }
+                flag = false;	// no salvar
+			}
 			else {
                 System.out.println("\nATERRIZAJE EXITOSO!!");
                 System.out.println("------------------------------------------------");
                 System.out.println("TIEMPO DE ATERRIZAJE : " + tiempo + " s");
                 System.out.println("FUEL EN DEPOSITO     : " + fuel_deposito + " l");
                 System.out.println("------------------------------------------------");
+                flag=true;		// salvar
 			}
 		}
 		else {
@@ -152,7 +157,9 @@ public class Simulacion {
             System.out.println("FUEL EN DEPOSITO     : " + fuel_deposito + " l");
             System.out.println("DISTANCIA A OBJETIVO : " + dist_fin + " m");
             System.out.println("------------------------------------------------");	
-		} // Misión finalizada o interrumpida  
+            flag = false;	// no salvar
+		} // Misión finalizada o interrumpida
+	 return flag;	
 	}  // show_result
 	
 	/**
@@ -162,7 +169,8 @@ public class Simulacion {
 	public boolean saveSim(String Modo) {
 		DAOSimulacion ds = new DAOSimulacion(Modo);
 		try {
-			ds.saveSimulacion(this);
+			if (ds.saveSimulacion(this))
+				System.out.println("Datos Almacenados en base de datos.");
 			ds._c.close();
 		} catch (SQLException e) {
 			e.printStackTrace();

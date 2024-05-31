@@ -27,7 +27,7 @@ public class DAOMySql {
                 c=DriverManager.getConnection (dbcs,_usr,_pwd);  
         	break;
         	default:
-        		System.out.println("Modo de conexion no valido");
+        		System.out.println("Modo de conexión no válido");
         		c=null;
         	}
 
